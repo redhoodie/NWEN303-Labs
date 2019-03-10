@@ -1,0 +1,683 @@
+NWEN303 Concurrent
+Programming
+3 Parallelism using libraries (Java)
+Marco Servetto
+VUW
+Last lecture recap
+Concurrency: Multiple things happening at once.
+Fork-Join is a simple concurrent model that generalizes Divide and
+Conquer.
+.parallelStream() is a simple solution to use Fork-Join in a Java
+program. Try to use more primitive approaches only if really needed.
+Fork-Join can be Nested/recursive, as for Divide and Conquer; but
+here the specific division of tasks can influence performance.
+We have seen parallel streams as an example of a library. We will see
+more libraries in the rest of the course.
+Using many libraries helps with writing correct and efficient code that
+can be easier to maintain since the API of the library most likely
+encodes common concepts in the problem domain.
+Most libraries supporting parallelism require an understanding of
+functional design.
+Functional or Imperative interface
+class Rectangle {
+ /*...*/
+ public Rectangle(int x, int y, int w, int h) { /*...*/ }
+ /* Adds a point, specified by the integer arguments
+ * newx and newy, to this Rectangle. The resulting
+ * Rectangle is the smallest Rectangle that contains
+ * both the original Rectangle and the specified point.*/
+ public void add(int newx, int newy) { /*...*/ }
+}
+(java.awt.Rectangle)
+Imperative Object-Oriented:
+– Emphasises in-place mutation of objects
+– Emphasises setters and getters for encapsulation
+– Emphasises object identity: two objects with same
+values for fields remain distinct
+Read this!
+http://pragprog.com/magazines/2013-01/functional-programming-basics
+Words of wisdom
+“Classes should be immutable unless there's a very good reason to make
+them mutable....If a class cannot be made immutable, limit its mutability
+as much as possible.”
+– Josh Bloch (Effective Java)
+“it is not uncommon for some objects to essentially encode nothing more
+than a function... It is particularly important for parallel APIs, in which the
+code to execute must be expressed independently of the thread in which it
+will run”
+ – Java 8
+“I think that large objected-oriented programs struggle with increasing
+complexity as you build this large object graph of mutable objects. You
+know, trying to understand and keep in your mind what will happen when
+you call a method and what will the side-effects be …”
+– Rich Hickey
+Imperative and Functional
+Many good libraries offer a functional interface while using imperative
+constraints inside their implementation, in order to balance efficiency with a
+clear semantic.
+In most cases, to provide a clean semantic, data-structures should be
+immutable, such as the String class.
+•Compare the following two Date classes:
+class Date{//Functional Style/*...*/
+ private final int day,month,year;
+ Date(int day,int month,int year){
+ this.day = day;
+ this.month = month;
+ this.year = year;
+ }
+ Date addDays(int days){
+ return new Date(/*...*/);}
+ }
+class Date{//Imperative Style/*...*/
+ private int day,month,year;
+ Date(int day,int month,int year){
+ this.day = day;
+ this.month = month;
+ this.year = year;
+ }
+ void addDays(int days){
+ this.day=/*...*/;
+ }
+ }
+class Date{//Functional Style/*...*/
+ private final int day,month,year;
+ Date(int day,int month,int year){
+ this.day = day;
+ this.month = month;
+ this.year = year;
+ }
+ Date addDays(int days){
+ return new Date(/*...*/);}
+ }
+class Date{//Imperative Style/*...*/
+ private int day,month,year;
+ Date(int day,int month,int year){
+ this.day = day;
+ this.month = month;
+ this.year = year;
+ }
+ void addDays(int days){
+ this.day=/*...*/;
+ }
+ }
+Imperative and Functional
+class Date{//Functional Style/*...*/
+ private final int day,month,year;
+ Date(int day,int month,int year){
+ this.day = day;
+ this.month = month;
+ this.year = year;
+ }
+ Date addDays(int days){
+ return new Date(/*...*/);}
+ }
+class Date{//Imperative Style/*...*/
+ private int day,month,year;
+ Date(int day,int month,int year){
+ this.day = day;
+ this.month = month;
+ this.year = year;
+ }
+ void addDays(int days){
+ this.day=/*...*/;
+ }
+ }
+Imperative and Functional
+class Date{//Functional Style/*...*/
+ private final int day,month,year;
+ Date(int day,int month,int year){
+ this.day = day;
+ this.month = month;
+ this.year = year;
+ }
+ Date addDays(int days){
+ return new Date(/*...*/);}
+ }
+class Date{//Imperative Style/*...*/
+ private int day,month,year;
+ Date(int day,int month,int year){
+ this.day = day;
+ this.month = month;
+ this.year = year;
+ }
+ void addDays(int days){
+ this.day=/*...*/;
+ }
+ }
+Imperative and Functional
+Many good libraries offer a functional interface while using imperative
+constraints inside their implementation, in order to balance efficiency with a
+clear semantic.
+In most cases, to provide a clean semantic, data-structures should be
+immutable, such as the String class.
+•Compare the following two Date classes:
+class Date{//Functional Style/*...*/
+ private final int day,month,year;
+ Date(int day,int month,int year){
+ this.day = day;
+ this.month = month;
+ this.year = year;
+ }
+ Date addDays(int days){
+ return new Date(/*...*/);}
+ }
+class Date{//Imperative Style/*...*/
+ private int day,month,year;
+ Date(int day,int month,int year){
+ this.day = day;
+ this.month = month;
+ this.year = year;
+ }
+ void addDays(int days){
+ this.day=/*...*/;
+ }
+ }
+Imperative and Functional
+class Date{//Functional Style/*...*/
+ private final int day,month,year;
+ Date(int day,int month,int year){
+ this.day = day;
+ this.month = month;
+ this.year = year;
+ }
+ Date addDays(int days){
+ return new Date(/*...*/);}
+ }
+class Date{//Imperative Style/*...*/
+ private int day,month,year;
+ Date(int day,int month,int year){
+ this.day = day;
+ this.month = month;
+ this.year = year;
+ }
+ void addDays(int days){
+ this.day=/*...*/;
+ }
+ }
+Imperative and Functional
+class Date{//Functional Style/*...*/
+ private final int day,month,year;
+ Date(int day,int month,int year){
+ this.day = day;
+ this.month = month;
+ this.year = year;
+ }
+ Date addDays(int days){
+ return new Date(/*...*/);}
+ }
+class Date{//Imperative Style/*...*/
+ private int day,month,year;
+ Date(int day,int month,int year){
+ this.day = day;
+ this.month = month;
+ this.year = year;
+ }
+ void addDays(int days){
+ this.day=/*...*/;
+ }
+ }
+class Assagnment{
+ Date due;
+ //...
+}
+class Assagnment{
+ Date due;
+ //...
+}
+Imperative and Functional
+class Date{//Functional Style/*...*/
+ private final int day,month,year;
+ Date(int day,int month,int year){
+ this.day = day;
+ this.month = month;
+ this.year = year;
+ }
+ Date addDays(int days){
+ return new Date(/*...*/);}
+ }
+class Date{//Imperative Style/*...*/
+ private int day,month,year;
+ Date(int day,int month,int year){
+ this.day = day;
+ this.month = month;
+ this.year = year;
+ }
+ void addDays(int days){
+ this.day=/*...*/;
+ }
+ }
+class Assagnment{
+ Date due;
+ //...
+ due.addDays(3);
+ //...
+}
+class Assagnment{
+ Date due;
+ //...
+ due=due.addDays(3);
+ //...
+}
+Imperative and Functional
+class Date{//Functional Style/*...*/
+ private final int day,month,year;
+ Date(int day,int month,int year){
+ this.day = day;
+ this.month = month;
+ this.year = year;
+ }
+ Date addDays(int days){
+ return new Date(/*...*/);}
+ }
+class Date{//Imperative Style/*...*/
+ private int day,month,year;
+ Date(int day,int month,int year){
+ this.day = day;
+ this.month = month;
+ this.year = year;
+ }
+ void addDays(int days){
+ this.day=/*...*/;
+ }
+ }
+class Assagnment{
+ Date due;
+ //...
+ due.addDays(3);
+ //...
+}
+class Assagnment{
+ Date due;
+ //...
+ due=due.addDays(3);
+ //...
+}
+class Person{ Date birth; /*...*/}
+Imperative and Functional
+class Date{//Functional Style/*...*/
+ private final int day,month,year;
+ Date(int day,int month,int year){
+ this.day = day;
+ this.month = month;
+ this.year = year;
+ }
+ Date addDays(int days){
+ return new Date(/*...*/);}
+ }
+class Date{//Imperative Style/*...*/
+ private int day,month,year;
+ Date(int day,int month,int year){
+ this.day = day;
+ this.month = month;
+ this.year = year;
+ }
+ void addDays(int days){
+ this.day=/*...*/;
+ }
+ }
+class Assagnment{
+ Date due;
+ //...
+ due.addDays(3);
+ //...
+}
+class Assagnment{
+ Date due;
+ //...
+ due=due.addDays(3);
+ //...
+}
+If aliasing goes very bad,
+an assignment extension corrupts
+some unrelated Person birth date!
+class Person{ Date birth; /*...*/}
+Imperative and Functional
+Imperative -- Hidden Aliasing
+class Date{//Functional Style/*...*/
+ private final int day,month,year;
+ Date(int day,int month,int year){
+ this.day = day;
+ this.month = month;
+ this.year = year;
+ }
+ Date addDays(int days){
+ return new Date(/*...*/);}
+ }
+class Date{//Imperative Style/*...*/
+ private int day,month,year;
+ Date(int day,int month,int year){
+ this.day = day;
+ this.month = month;
+ this.year = year;
+ }
+ void addDays(int days){
+ this.day=/*...*/;
+ }
+ }
+class Assagnment{
+ Date due;
+ //...
+ due.addDays(3);
+ //...
+}
+class Assagnment{
+ Date due;
+ //...
+ due=due.addDays(3);
+ //...
+}
+If aliasing goes very bad,
+an assignment extension corrupts
+some unrelated Person birth date!
+class Person{ Date birth; /*...*/}
+Here, Date aliasing is harmless!
+To update an Assignment, we do
+directly a field update
+in the Assignment instance!
+Hidden aliasing-- Defensive coping
+class Date{//Imperative Style/*...*/
+ private int day,month,year;
+ Date(int day,int month,int year){
+ this.day = day;
+ this.month = month;
+ this.year = year;
+ }
+ void addDays(int days){
+ this.day=/*...*/;
+ }
+ }
+class Assagnment{
+ Date due;
+ //...
+ due.addDays(3);
+ //...
+}
+// -- wrong in a library setting--
+class Person{
+ private Date birth;
+ public Person(Date birth){
+ this.birth=birth;//usual code
+ }
+ public Date getDate(){
+ return this.birth;//usual code
+ }
+ }
+//-- correct code --
+class Person{
+ private Date birth;
+ private Person(Date birth){
+ this.birth=birth
+ }//constructor: internal use only
+ public static Person of(Date d){
+ return new Person(d.clone());
+ //defensive coping
+ }
+ public Date getDate(){
+ return this.birth.clone();
+ }//defensive coping
+ }
+If we have only imperative Dates,
+It is quite hard to write
+a correct Person class!
+Functional interface and Parallelism
+• Full Immutability = synchronization unnecessary.
+• Full defensive copy = synchronization unnecessary.
+• Often neither full immutability, nor full defensive copying
+are the best idea.
+• Right balance of the two = synchronization unnecessary.
+Example: making an index for a text and search
+for two nearby words
+Step one: getting confident with reading/writing
+text: lets count how many time a word occurs.
+Functional interface and Parallelism
+public class Main {
+ public static Stream<String>readFile(String localName){
+ try{
+ Path p=Paths.get(Main.class.getResource(localName).toURI());
+ return Files.lines(p);}
+ catch (IOException | URISyntaxException e) {throw new Error(e);}
+ }
+ public static List<String> splitOnSpaces(String s){//not great code...
+ return Arrays.asList(s.split("\\s+"));//good code depends on exactly
+ //what space means and how to handle spaces on start-end
+ }
+ public static String normalize(String s){
+ s=s.toLowerCase();
+ if(s.endsWith("s")){return s.substring(0,s.length()-1);}
+ return s;//real normalization would be massively complicated
+ }
+ public static void main(String[] args) {
+ Stream<String>data=readFile("Test.txt").parallel();
+ Map<String,Long> res = data
+ .flatMap(line->splitOnSpaces(line).stream())
+ .map(w->normalize(w))
+ .collect(Collectors.groupingByConcurrent(
+ s->s,//the key to group is the whole word
+ Collectors.counting())//mapped to the occurrences of such word
+ );
+ System.out.println(res);
+ }
+ }
+public class Main {
+ public static Stream<String>readFile(String localName){
+ try{
+ Path p=Paths.get(Main.class.getResource(localName).toURI());
+ return Files.lines(p);}
+ catch (IOException | URISyntaxException e) {throw new Error(e);}
+ }
+ public static List<String> splitOnSpaces(String s){//not great code...
+ return Arrays.asList(s.split("\\s+"));//good code depends on exactly
+ //what space means and how to handle spaces on start-end
+ }
+ public static String normalize(String s){
+ s=s.toLowerCase();
+ if(s.endsWith("s")){return s.substring(0,s.length()-1);}
+ return s;//real normalization would be massively complicated
+ }
+ public static void main(String[] args) {
+ Stream<String>data=readFile("Test.txt").parallel();
+ Map<String,Long> res = data
+ .flatMap(line->splitOnSpaces(line).stream())
+ .map(w->normalize(w))
+ .collect(Collectors.groupingByConcurrent(
+ s->s,//the key to group is the whole word
+ Collectors.counting())//mapped to the occurrences of such word
+ );
+ System.out.println(res);
+ }
+ }
+1
+2
+3
+Map, FlatMap, Collect/Grouping
+Map maps one element in one element!
+FlatMap maps one element in zero or more
+elements
+Collect produces a result, groupingBy is a way
+of collecting that produces a map, with keys
+identifying each group, and can take a second
+collector generating the values of such map.
+Step two: creating a reusable index
+Functional interface and Parallelism
+public class TextInfo{
+ List<String>list;
+ Map<String,List<Integer>>inverseIndex;
+ public TextInfo(String name) {
+ Stream<String>data=readFile(name).parallel();
+ list=data
+ .flatMap(line->splitOnSpaces(line).stream())
+ .map(w->normalize(w)).collect(Collectors.toList());
+ list=Collections.unmodifiableList(list);
+ inverseIndex=IntStream.range(0, list.size()).parallel().boxed()
+ .collect(Collectors.groupingByConcurrent(i->list.get(i)));
+ inverseIndex=Collections.unmodifiableMap(inverseIndex);
+ // map word to list of occurrences.
+ //Once we have list and inverseIndex, the fun can begin
+ }
+ ...
+ }
+Step two: creating a reusable index
+Functional interface and Parallelism
+public class TextInfo{
+ List<String>list;
+ Map<String,List<Integer>>inverseIndex;
+ public TextInfo(String name) {
+ Stream<String>data=readFile(name).parallel();
+ list=data
+ .flatMap(line->splitOnSpaces(line).stream())
+ .map(w->normalize(w)).collect(Collectors.toList());
+ list=Collections.unmodifiableList(list);
+ inverseIndex=IntStream.range(0, list.size()).parallel().boxed()
+ .collect(Collectors.groupingByConcurrent(i->list.get(i)));
+ inverseIndex=Collections.unmodifiableMap(inverseIndex);
+ // map word to list of occurrences.
+ //Once we have list and inverseIndex, the fun can begin
+ }
+ ...
+ }
+Step three: a method using the index
+Functional interface and Parallelism
+public class TextInfo{
+ List<String>list;
+ Map<String,List<Integer>>inverseIndex;
+ ...
+ public List<String> context(String first,String second){
+ List<Integer>pos=inverseIndex.get(first);
+ if(pos==null) {return Collections.emptyList();}
+ Optional<Integer> found=pos.parallelStream()
+ .filter(i->i+1!=list.size() && list.get(i+1).equals(second))
+ .findFirst();
+ if(!found.isPresent()) {return Collections.emptyList();}
+ int less=Math.max(found.get()-10,0);
+ int more=Math.min(found.get()+10,list.size());
+ return list.subList(less, more);
+}
+ ...
+ }
+Step three: a method using the index
+Functional interface and Parallelism
+public class TextInfo{
+ List<String>list;
+ Map<String,List<Integer>>inverseIndex;
+ ...
+ public List<String> context(String first,String second){
+ List<Integer>pos=inverseIndex.get(first);
+ if(pos==null) {return Collections.emptyList();}
+ Optional<Integer> found=pos.parallelStream()
+ .filter(i->i+1!=list.size() && list.get(i+1).equals(second))
+ .findFirst();
+ if(!found.isPresent()) {return Collections.emptyList();}
+ int less=Math.max(found.get()-10,0);
+ int more=Math.min(found.get()+10,list.size());
+ return list.subList(less, more);
+}
+ ...
+ }
+Step four: call our method!
+Functional interface and Parallelism
+TextInfo ti=new TextInfo("Test.txt");
+System.out.println("Context");
+System.out.println(ti.context("closer", "to"));
+[the, pilot, in, taiwan,, the, technology, i, now, being, trialled, closer, to,
+home, in, area, where, landslide, have, occurred,, including]
+What is bad
+Using Threads directly is bad
+Communication between processes is bad
+Writing parallel programs is bad
+Writing efficient programs is bad
+Writing programs is bad
+Using Threads directly is bad
+Creating/starting a thread is costly.
+The optimal number of threads that should try to run in parallel is
+hard to find.
+There is a limit of how many threads can be alive at the same time.
+Easy to fall in the trap of non modular reasoning, assuming you
+know what the other parts of your program are doing, and how many
+threads they are using, this is often an implementation detail.
+Solution: Many libraries offers the concept of Tasks and ThreadPool.
+A ThreadPool is a resource containing and managing many Threads
+Using Threads directly is bad
+Solution: Many libraries offers the concept of
+Tasks and ThreadPools.
+A ThreadPool is an opaque collection
+containing threads.
+You can think of it as a Temporary Jobs Agency.
+Clients submit Tasks to the Pool, and the pool
+provides a worker. When the task is over the
+worker goes back to the Pool.
+Communication between
+processes is bad
+Popular issues:
+– Deadlock, Livelock, Starvation, Race condition,
+Non deterministic behavior,
+Sometime surprising issues:
+– Cache coherence,
+– Understanding memory models,
+Often surprising issues:
+– Compilers reordering of instructions.
+– Long and double can exceed processor's word length.
+We will discuss about those issues more in the course.
+Communication between
+processes is bad
+Popular solutions:
+– Fork Join, Map Reduce, Actors
+– In general, libraries that define a specific way some task
+should communicate, often with a functional take: every
+task take some input and produce some output.
+However, using those solutions requires to program
+in a specific style. That stile is (very) often the good
+one.
+To use such libraries you need to *know* such
+libraries. At the start it can look like a big deal, but
+knowing how to not use them is much, *much*
+harder.
+Writing parallel programs is bad
+Even if no variable or field is used as a
+communications between running workers, a
+parallel program can refer to multiple (system)
+resources at the same time, for example
+corrupting its own file.
+Moreover, an aliasing bug can become an
+hidden point of communication between
+processes.
+Writing efficient programs is bad
+Your code should focus on correctness and simplicity.
+Then if and only if some efficiency issue arise, you can
+do a profiling.
+For example http://tutorials.jenkov.com/java-performance/jmh.html
+(and that is a new reading!)
+Profiling will tell you where is the problem.
+Now you can apply libraries to make your code faster
+there.
+Writing programs is bad
+What? Yes, and the bigger the program, the bigger the evil!
+I mean, a program should be a little piece of code in the
+main customizing, wiring and invoking a handful of
+libraries.
+So, writing libraries is good. Even if you are going to be the
+only one using them.
+Thinking in terms of libraries and offered functionalities
+make your code much more reusable and general, and
+testable too.
+What is bad
+Using Threads directly is bad
+Communication between processes is bad
+Writing parallel programs is bad
+Writing efficient programs is bad
+Writing programs is bad
+What is good
+Write modular functionalities with clear input output boundaries,
+that could potentially be used as a library in other programs.
+Write tests, and stress tests, and see where and if there is any
+efficiency issue.
+Before resorting to parallelism, try other kinds of optimizations.
+Do not try to recreate the wheel, learn and use nice reusable
+abstractions. Your handcrafted solution may be correct, and may
+be is faster. May be on your local machine only!
+Use low level features as a last resource only. If you need to use
+such last resource tools, you are probably doing a cutting edge
+application that is revolutionizing what humanity thinks is
+possible to do with computing, and you should demand to be
+payed accordingly. So, either you are not payed what you worth,
+or you have no hope to do low level efficient and correct
+parallelism.
